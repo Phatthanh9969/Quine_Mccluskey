@@ -1,0 +1,164 @@
+import os
+os.system("cls")
+
+def input_minterms(data):
+    minterms = []
+    # user_input = input("Enter the minterms (e.g., 0 1 2 3): ")
+    user_input = data
+    minterms = set(list(map(int, user_input.split())))
+    minterms = list(minterms)
+    # print(user_input)
+    return minterms
+
+def combine_terms(a, b):
+    diff_count = 0
+    diff_index = -1
+    combined = list(a)
+    for i in range(len(a)):
+        if a[i] != b[i]:
+            diff_count += 1
+            diff_index = i
+            if diff_count > 1:
+                return None
+    combined[diff_index] = '-'
+    return ''.join(combined)
+
+def get_prime_implicants(minterms):
+    num_vars = len(bin(max(minterms))) - 2
+    groups = [[] for _ in range(num_vars + 1)]
+    
+    for minterm in minterms:
+        groups[bin(minterm).count('1')].append(bin(minterm)[2:].zfill(num_vars))
+    
+    all_combinations = True
+    prime_implicants = set()
+    
+    while all_combinations:
+        all_combinations = False
+        new_groups = [[] for _ in range(num_vars + 1)]
+        combined = set()
+        
+        for i in range(len(groups) - 1):
+            for a in groups[i]:
+                for b in groups[i + 1]:
+                    combined_term = combine_terms(a, b)
+                    if combined_term:
+                        new_groups[bin(int(combined_term.replace('-', '0'), 2)).count('1')].append(combined_term)
+                        combined.add(a)
+                        combined.add(b)
+                        all_combinations = True
+        
+        for group in groups:
+            for term in group:
+                if term not in combined:
+                    prime_implicants.add(term)
+        
+        groups = new_groups
+    
+    return list(prime_implicants)
+
+def find_essential_prime_implicants(prime_implicants, minterms):
+    num_vars = len(prime_implicants[0])
+    cover_table = {minterm: [] for minterm in minterms}
+    
+    for pi in prime_implicants:
+        for minterm in minterms:
+            if all(pi[i] == '-' or pi[i] == bin(minterm)[2:].zfill(num_vars)[i] for i in range(num_vars)):
+                cover_table[minterm].append(pi)
+    
+    essential_prime_implicants = set()
+    
+    while cover_table:
+        for minterm, pis in cover_table.items():
+            if len(pis) == 1:
+                essential_prime_implicants.add(pis[0])
+                remove_pi = pis[0]
+                break
+        else:
+            break
+        
+        new_cover_table = {}
+        for m, pis in cover_table.items():
+            if remove_pi not in pis:
+                new_cover_table[m] = pis
+        cover_table = new_cover_table
+    
+    return list(essential_prime_implicants)
+
+def quine_mccluskey(minterms):
+    prime_implicants = get_prime_implicants(minterms)
+    essential_prime_implicants = find_essential_prime_implicants(prime_implicants, minterms)
+    return essential_prime_implicants
+
+def convert_binary_x(n, data):
+    temp = []
+    for i in range(n):
+        for x in data[i]:
+            if x == "0":
+                temp.append("X'")
+            elif x == "-":
+                temp.append("-")
+            elif x == "1":
+                temp.append("X")
+    return temp
+
+def input_letter(var):
+    data = var.upper()
+    # data = input("Var (e.g., ABCD): ")
+    
+    data = list(data.replace(",", ""))
+    return data
+
+def list_to_string(data, n, length):
+    m = 0
+    for i in range(length - 1):
+        data.insert(((i + 1) * n) + m, "+")
+        m += 1
+    filtered_list = [item for item in data if item]
+    result_string = ''.join(filtered_list)
+    return result_string
+
+def finding_unique_minterms(data, letter):
+    num = []
+    result = []
+    num = convert_binary_x(len(data), data)
+    j = 0
+    tx = True
+    k = 1
+    while tx:
+        for i in range(len(num)):
+            if num[i] == "X":
+                num[i] = letter[j]
+                j += 1
+            if num[i] == "X'":
+                num[i] = letter[j] + "'"
+                j += 1
+            if num[i] == "-":
+                num[i] = ""
+                j += 1
+            if j == len(letter) and i < (len(num) - 1):
+                j = 0
+                k += 1
+            else:
+                tx = False
+    result = list_to_string(num, int(len(letter)), int(len(data)))
+    
+    # print(num)
+    # print(result)
+    return result
+
+# Main function to run the Quine-McCluskey algorithm
+# def main():
+#     data = ("0 2 5")
+#     vars = ("A,BC")
+#     letter =input_letter(vars)
+#     input_minterms_list = input_minterms(data)
+#     minterms = quine_mccluskey(input_minterms_list)
+#     print(minterms)
+#     finding_unique_minterms(minterms, letter)
+
+# if __name__ == "__main__":
+#     main()
+#     input()
+
+# # pyinstaller Main.py
