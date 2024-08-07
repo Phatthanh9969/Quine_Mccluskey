@@ -145,7 +145,4 @@ menumode.set("system")
 button = customtkinter.CTkButton(frame_input, text="Submit", command=submit)
 button.place(relx=360/WIDTH, rely=350/HEIGHT, anchor="center")
 
-
-
 window.mainloop()
-
