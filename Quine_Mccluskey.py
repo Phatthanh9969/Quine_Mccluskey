@@ -1,8 +1,6 @@
 import customtkinter
 import main
 import os
-import tkinter as tk
-from tkinter import ttk
 os.system("cls")
 
 window = customtkinter.CTk()
@@ -27,82 +25,85 @@ def combobox_callback(choice):
 
 
 def submit():
-    #Results
-
     num = num_entry.get()
-    num = sorted(main.input_minterms(num))
+    num = sorted(main.input_minterms(num))    
     vars = var_entry.get()
     vars = sorted(main.input_letter(vars))
+
+    lenght_max_num =len(bin(max(num)))-2
+    lenght_max_var = len(vars)
     
-    
-    # print(minterms)
-    
+    if lenght_max_var < lenght_max_num or lenght_max_var > lenght_max_num:
+        running = False
+        print("Try Again")
+    else:
+        running = True
+
     num_entry.delete(0, len(num_entry.get()))
-    var_entry.delete(0, len(var_entry.get()))
-
-    # print(result)
-
-    #STEP 1: =============================================
-    caption= customtkinter.CTkLabel(frame_output, text="Step 1: Minterm", fg_color=("white", "grey75"), 
-                                    text_color = "black", height=25, width=250, anchor="w")
+    var_entry.delete(0, len(var_entry.get()))    
     
-    caption.place(relx=20/WIDTH, rely=50/HEIGHT)
+    if running:
 
-    caption= customtkinter.CTkLabel(frame_output, text=num, anchor="center")
-    caption.place(relx=50/WIDTH, rely=80/HEIGHT)
-    
-    #STEP 2: ================================================
-    caption= customtkinter.CTkLabel(frame_output, text="Step 2: Group", fg_color=("white", "grey75"), 
-                                    text_color = "black", height=25, width=250, anchor="w")
-    
-    caption.place(relx=20/WIDTH, rely=110/HEIGHT)
-    
-    temp = main.group_minterms(num)
+        #STEP 1: =============================================
+        caption= customtkinter.CTkLabel(frame_output, text="Step 1: Minterm", fg_color=("white", "grey75"), 
+                                        text_color = "black", height=25, width=250, anchor="w")
+        
+        caption.place(relx=20/WIDTH, rely=50/HEIGHT)
 
-    temp=[lst for lst in temp if lst]
+        caption= customtkinter.CTkLabel(frame_output, text=num, anchor="center")
+        caption.place(relx=50/WIDTH, rely=80/HEIGHT)
+        
+        #STEP 2: ================================================
+        caption= customtkinter.CTkLabel(frame_output, text="Step 2: Group", fg_color=("white", "grey75"), 
+                                        text_color = "black", height=25, width=250, anchor="w")
+        
+        caption.place(relx=20/WIDTH, rely=110/HEIGHT)
+        
+        temp = main.group_minterms(num)
 
-    for i in range(len(temp)):
-        caption= customtkinter.CTkLabel(frame_output, text=temp[i])
-        caption.place(relx=50/WIDTH, rely=(140+i*25)/HEIGHT)
-    
-    #STEP 3: =================================================
-    caption= customtkinter.CTkLabel(frame_output, text="Step 3: Prime Implicants", fg_color=("white", "grey75"), 
-                                    text_color = "black", height=25, width=250, anchor="w")
-    
-    caption.place(relx=20/WIDTH, rely=260/HEIGHT)
-    
-    minterms = main.quine_mccluskey(num)
+        temp=[lst for lst in temp if lst]
 
-    caption= customtkinter.CTkLabel(frame_output, text=minterms)
-    caption.place(relx=50/WIDTH, rely=290/HEIGHT)
+        for i in range(len(temp)):
+            caption= customtkinter.CTkLabel(frame_output, text=temp[i])
+            caption.place(relx=50/WIDTH, rely=(140+i*25)/HEIGHT)
+        
+        #STEP 3: =================================================
+        caption= customtkinter.CTkLabel(frame_output, text="Step 3: Prime Implicants", fg_color=("white", "grey75"), 
+                                        text_color = "black", height=25, width=250, anchor="w")
+        
+        caption.place(relx=20/WIDTH, rely=260/HEIGHT)
+        
+        minterms = main.quine_mccluskey(num)
 
-    #STEP 4: =================================================
-    caption= customtkinter.CTkLabel(frame_output, text="Step 4: Convert Implicants", fg_color=("white", "grey75"), 
-                                    text_color = "black", height=25, width=250, anchor="w")
+        caption= customtkinter.CTkLabel(frame_output, text=minterms)
+        caption.place(relx=50/WIDTH, rely=290/HEIGHT)
+
+        #STEP 4: =================================================
+        caption= customtkinter.CTkLabel(frame_output, text="Step 4: Convert Implicants", fg_color=("white", "grey75"), 
+                                        text_color = "black", height=25, width=250, anchor="w")
+        
+        caption.place(relx=20/WIDTH, rely=320/HEIGHT)
+
+        result = main.finding_unique_minterms(minterms, vars)
+        result = result.replace("+","  ")
+
+        caption= customtkinter.CTkLabel(frame_output, text = result)
+        caption.place(relx=50/WIDTH, rely=350/HEIGHT)
+
+        #STEP 5: =================================================
+        caption= customtkinter.CTkLabel(frame_output, text="Step 5: Function Minimizations", fg_color=("white", "grey75"), 
+                                        text_color = "black", height=25, width=250, anchor="w")
+        
+        caption.place(relx=20/WIDTH, rely=380/HEIGHT)
+        
+        result = main.finding_unique_minterms(minterms, vars)
+        
+        caption= customtkinter.CTkLabel(frame_output, text = result)
+        caption.place(relx=50/WIDTH, rely=410/HEIGHT)
+        
+        window.mainloop()
+
     
-    caption.place(relx=20/WIDTH, rely=320/HEIGHT)
-
-    result = main.finding_unique_minterms(minterms, vars)
-    result = result.replace("+","  ")
-
-    caption= customtkinter.CTkLabel(frame_output, text = result)
-    caption.place(relx=50/WIDTH, rely=350/HEIGHT)
-
-    #STEP 5: =================================================
-    caption= customtkinter.CTkLabel(frame_output, text="Step 5: Function Minimizations", fg_color=("white", "grey75"), 
-                                    text_color = "black", height=25, width=250, anchor="w")
-    
-    caption.place(relx=20/WIDTH, rely=380/HEIGHT)
-    
-    result = main.finding_unique_minterms(minterms, vars)
-    
-    caption= customtkinter.CTkLabel(frame_output, text = result)
-    caption.place(relx=50/WIDTH, rely=410/HEIGHT)
-
-    
-    
-
-
     window.mainloop()
 
 frame_output = customtkinter.CTkFrame(window)
