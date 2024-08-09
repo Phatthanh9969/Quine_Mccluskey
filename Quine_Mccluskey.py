@@ -1,148 +1,186 @@
-import customtkinter
-import main
-import os
-os.system("cls")
+import customtkinter  # Import the customtkinter module for the GUI
+import main           # Import the main module which contains the logic for the Quine-McCluskey algorithm
+import os             # Import os module to interact with the operating system
+os.system("cls")      # Clear the terminal/command prompt
 
+# Create the main window
 window = customtkinter.CTk()
-WIDTH=750
-HEIGHT=450
-window.geometry(f"{WIDTH}x{HEIGHT}")
-window.title("QUINE MCCLUSKEY")
+WIDTH = 750
+HEIGHT = 450
+window.geometry(f"{WIDTH}x{HEIGHT}")  # Set the size of the window
+window.title("QUINE MCCLUSKEY")  # Set the title of the window
 
+# Function to handle the combobox selection and change appearance mode
 def combobox_callback(choice):
-    selected_value = menumode.get()
-    customtkinter.set_appearance_mode(selected_value)
-    if selected_value == "light":
-        color="green"
-    else:
-        color="blue"
-    customtkinter.set_default_color_theme(color)
+    selected_value = menumode.get()  # Get the selected value from the combobox
+    customtkinter.set_appearance_mode(selected_value)  # Set the appearance mode (light/dark/system)
     
+    # Set color theme based on appearance mode
+    if selected_value == "light":
+        color = "green"
+    else:
+        color = "blue"
+    customtkinter.set_default_color_theme(color)  # Set the default color theme
+    
+    # Create and place the submit button
     button = customtkinter.CTkButton(frame_input, text="Submit", command=submit)
     button.place(relx=360/WIDTH, rely=350/HEIGHT, anchor="center")
 
-    window.mainloop()
+    window.mainloop()  # Start the main event loop
 
-
+# Function to handle the submit button click
 def submit():
-    num = num_entry.get()
-    num = sorted(main.input_minterms(num))    
-    vars = var_entry.get()
-    vars = sorted(main.input_letter(vars))
+    testNum = True
+    testVar = True
 
-    lenght_max_num =len(bin(max(num)))-2
-    lenght_max_var = len(vars)
-    
+    # Validate the number of minterms and variables
+    if testNum and testVar:
+        num = num_entry.get()  # Get minterms from the entry widget
+        vars = var_entry.get()  # Get variables from the entry widget
+
+        temp = num.replace(" ", "")  # Remove spaces from minterms input
+
+        testNum = temp.isdigit()  # Check if the minterms input is numeric
+        testVar = vars.isalpha()   # Check if the variables input contains only alphabetic characters
+
+        if testNum:
+            num = sorted(main.input_minterms(num))  # Process and sort the minterms input
+            testNum = False
+        else:
+            # Show an error message and reset the minterms input if validation fails
+            caption = customtkinter.CTkLabel(frame_input, text="Try Again")
+            caption.place(relx=360/WIDTH, rely=150/HEIGHT)
+
+            num_entry.delete(0, len(num_entry.get()))
+            num = (0, 10000)
+
+            testNum = True
+
+        if testVar:
+            vars = sorted(main.input_letter(vars))  # Process and sort the variables input
+            testVar = False
+        else:
+            # Show an error message and reset the variables input if validation fails
+            caption = customtkinter.CTkLabel(frame_input, text="Try Again")
+            caption.place(relx=360/WIDTH, rely=150/HEIGHT)
+
+            var_entry.delete(0, len(var_entry.get()))
+
+            testVar = True
+
+    # Check if the number of variables matches the number of bits needed for minterms
+    lenght_max_num = len(bin(max(num))) - 2  # Calculate the length of the binary representation of the max minterm
+    lenght_max_var = len(vars)  # Get the number of variables
+
     if lenght_max_var < lenght_max_num or lenght_max_var > lenght_max_num:
         running = False
-        print("Try Again")
+        # Show an error message if the number of variables doesn't match the number of minterms
+        caption = customtkinter.CTkLabel(frame_input, text="Try Again")
+        caption.place(relx=360/WIDTH, rely=150/HEIGHT)
     else:
         running = True
 
-    num_entry.delete(0, len(num_entry.get()))
-    var_entry.delete(0, len(var_entry.get()))    
-    
     if running:
+        # Clear previous error message
+        caption = customtkinter.CTkLabel(frame_input, text="                 ")
+        caption.place(relx=360/WIDTH, rely=150/HEIGHT)
 
-        #STEP 1: =============================================
-        caption= customtkinter.CTkLabel(frame_output, text="Step 1: Minterm", fg_color=("white", "grey75"), 
-                                        text_color = "black", height=25, width=250, anchor="w")
-        
+        # Step 1: Display the minterms
+        caption = customtkinter.CTkLabel(frame_output, text="Step 1: Minterm", fg_color=("white", "grey75"), 
+                                         text_color="black", height=25, width=250, anchor="w")
         caption.place(relx=20/WIDTH, rely=50/HEIGHT)
 
-        caption= customtkinter.CTkLabel(frame_output, text=num, anchor="center")
+        caption = customtkinter.CTkLabel(frame_output, text=num, anchor="center")
         caption.place(relx=50/WIDTH, rely=80/HEIGHT)
-        
-        #STEP 2: ================================================
-        caption= customtkinter.CTkLabel(frame_output, text="Step 2: Group", fg_color=("white", "grey75"), 
-                                        text_color = "black", height=25, width=250, anchor="w")
-        
+
+        # Step 2: Group the minterms
+        caption = customtkinter.CTkLabel(frame_output, text="Step 2: Group", fg_color=("white", "grey75"), 
+                                         text_color="black", height=25, width=250, anchor="w")
         caption.place(relx=20/WIDTH, rely=110/HEIGHT)
         
-        temp = main.group_minterms(num)
-
-        temp=[lst for lst in temp if lst]
+        temp = main.group_minterms(num)  # Group minterms using the function from the main module
+        temp = [lst for lst in temp if lst]  # Filter out empty lists
 
         for i in range(len(temp)):
-            caption= customtkinter.CTkLabel(frame_output, text=temp[i])
+            caption = customtkinter.CTkLabel(frame_output, text=temp[i])
             caption.place(relx=50/WIDTH, rely=(140+i*25)/HEIGHT)
-        
-        #STEP 3: =================================================
-        caption= customtkinter.CTkLabel(frame_output, text="Step 3: Prime Implicants", fg_color=("white", "grey75"), 
-                                        text_color = "black", height=25, width=250, anchor="w")
-        
+
+        # Step 3: Find and display the prime implicants
+        caption = customtkinter.CTkLabel(frame_output, text="Step 3: Prime Implicants", fg_color=("white", "grey75"), 
+                                         text_color="black", height=25, width=250, anchor="w")
         caption.place(relx=20/WIDTH, rely=260/HEIGHT)
         
-        minterms = main.quine_mccluskey(num)
-
-        caption= customtkinter.CTkLabel(frame_output, text=minterms)
+        minterms = main.quine_mccluskey(num)  # Find prime implicants using the function from the main module
+        caption = customtkinter.CTkLabel(frame_output, text=minterms)
         caption.place(relx=50/WIDTH, rely=290/HEIGHT)
 
-        #STEP 4: =================================================
-        caption= customtkinter.CTkLabel(frame_output, text="Step 4: Convert Implicants", fg_color=("white", "grey75"), 
-                                        text_color = "black", height=25, width=250, anchor="w")
-        
+        # Step 4: Convert implicants to variables
+        caption = customtkinter.CTkLabel(frame_output, text="Step 4: Convert Implicants", fg_color=("white", "grey75"), 
+                                         text_color="black", height=25, width=250, anchor="w")
         caption.place(relx=20/WIDTH, rely=320/HEIGHT)
 
-        result = main.finding_unique_minterms(minterms, vars)
-        result = result.replace("+","  ")
+        result = main.finding_unique_minterms(minterms, vars)  # Convert prime implicants to variables
+        result = result.replace("+", "  ")
 
-        caption= customtkinter.CTkLabel(frame_output, text = result)
+        caption = customtkinter.CTkLabel(frame_output, text=result)
         caption.place(relx=50/WIDTH, rely=350/HEIGHT)
 
-        #STEP 5: =================================================
-        caption= customtkinter.CTkLabel(frame_output, text="Step 5: Function Minimizations", fg_color=("white", "grey75"), 
-                                        text_color = "black", height=25, width=250, anchor="w")
-        
+        # Step 5: Display the minimized function
+        caption = customtkinter.CTkLabel(frame_output, text="Step 5: Function Minimizations", fg_color=("white", "grey75"), 
+                                         text_color="black", height=25, width=250, anchor="w")
         caption.place(relx=20/WIDTH, rely=380/HEIGHT)
         
-        result = main.finding_unique_minterms(minterms, vars)
-        
-        caption= customtkinter.CTkLabel(frame_output, text = result)
+        result = main.finding_unique_minterms(minterms, vars)  # Find the minimized function
+        caption = customtkinter.CTkLabel(frame_output, text=result)
         caption.place(relx=50/WIDTH, rely=410/HEIGHT)
         
-        window.mainloop()
+        window.mainloop()  # Start the main event loop
 
-    
-    window.mainloop()
+    window.mainloop()  # Start the main event loop again
 
+# Create and place the output frame
 frame_output = customtkinter.CTkFrame(window)
-frame_output.place(relx=10/WIDTH, rely=10/HEIGHT, relwidth=250/WIDTH, relheight=431/HEIGHT) 	
+frame_output.place(relx=10/WIDTH, rely=10/HEIGHT, relwidth=250/WIDTH, relheight=431/HEIGHT)
 
+# Create and place the input frame
 frame_input = customtkinter.CTkFrame(window)
-frame_input.place(relx=270/WIDTH, rely=10/HEIGHT, relwidth=450/WIDTH, relheight=280/HEIGHT ) 	
+frame_input.place(relx=270/WIDTH, rely=10/HEIGHT, relwidth=450/WIDTH, relheight=280/HEIGHT)
 
+# Create and place the extend frame
 frame_extend = customtkinter.CTkFrame(window)
-frame_extend.place(relx=270/WIDTH, rely=0.667, relwidth=450/WIDTH, relheight=140/HEIGHT) 	
+frame_extend.place(relx=270/WIDTH, rely=0.667, relwidth=450/WIDTH, relheight=140/HEIGHT)
 
-Label= customtkinter.CTkLabel(frame_input, text="__INPUT__")
+# Create and place the labels
+Label = customtkinter.CTkLabel(frame_input, text="__INPUT__")
 Label.place(relx=10/WIDTH, rely=5/HEIGHT)
 
-Label= customtkinter.CTkLabel(frame_output, text="__RESULT__")
+Label = customtkinter.CTkLabel(frame_output, text="__RESULT__")
 Label.place(relx=10/WIDTH, rely=5/HEIGHT)
 
-Label= customtkinter.CTkLabel(frame_extend, text="__EXTEND__")
+Label = customtkinter.CTkLabel(frame_extend, text="__EXTEND__")
 Label.place(relx=10/WIDTH, rely=5/HEIGHT)
 
+# Create and place the minterms label and entry
 frame_num = customtkinter.CTkLabel(frame_input, text="MINTERMS")
 frame_num.place(relx=200/WIDTH, rely=100/HEIGHT)
 
 num_entry = customtkinter.CTkEntry(frame_input, placeholder_text="e.g., 0 1 2 3 ...")
 num_entry.place(relx=350/WIDTH, rely=100/HEIGHT)
 
-frame_var = customtkinter.CTkLabel(frame_input, text="VARIABLE" )
-frame_var.place(relx=200/WIDTH, rely=180/HEIGHT)
+# Create and place the variables label and entry
+frame_var = customtkinter.CTkLabel(frame_input, text="VARIABLE")
+frame_var.place(relx=200/WIDTH, rely=200/HEIGHT)
 
 var_entry = customtkinter.CTkEntry(frame_input, placeholder_text="e.g., ABCD")
-var_entry.place(relx=350/WIDTH, rely=180/HEIGHT)
+var_entry.place(relx=350/WIDTH, rely=200/HEIGHT)
 
-#combobox
+# Create and place the appearance mode combobox
 menumode = customtkinter.CTkComboBox(frame_extend, values=["dark", "light", "system"], command=combobox_callback)
 menumode.place(relx=630/WIDTH, rely=400/HEIGHT, anchor="center")
-menumode.set("system")
+menumode.set("system")  # Set the default value to system mode
 
-#button
+# Create and place the submit button
 button = customtkinter.CTkButton(frame_input, text="Submit", command=submit)
 button.place(relx=360/WIDTH, rely=350/HEIGHT, anchor="center")
 
-window.mainloop()
+window.mainloop()  # Start the main event loop
