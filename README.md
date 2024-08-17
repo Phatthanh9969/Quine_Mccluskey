@@ -6,6 +6,4 @@ Soucre main in main.py
 
 Graphic user interface in GUI.py
 
-How to run code:
-
-Run GUI.py
+How to run code --> Run GUI.py
