@@ -1,6 +1,6 @@
-Design by Pham Thanh Phat - 22200122
+Design by Thanh Phat
 
-Code with Python, Custom Tkinder library
+Code with Python, customtkinter library
 
 Soucre main in main.py
 
