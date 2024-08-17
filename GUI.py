@@ -159,7 +159,7 @@ def submit():
         caption.place(relx=150/WIDTH, rely=180/HEIGHT)
         
 
-        # window.mainloop()  # Start the main event loop
+    window.mainloop()  # Start the main event loop
 
 # Create and place the output frame
 frame_output = customtkinter.CTkFrame(window)
@@ -198,8 +198,8 @@ var_entry = customtkinter.CTkEntry(frame_input, placeholder_text="e.g., ABCD", w
 var_entry.place(relx=300/WIDTH, rely=200/HEIGHT)
 
 # Create and place the appearance mode combobox
-menumode = customtkinter.CTkComboBox(frame_extend, values=["dark", "light", "system"], command=combobox_callback)
-menumode.place(relx=630/WIDTH, rely=400/HEIGHT, anchor="center")
+menumode = customtkinter.CTkComboBox(frame_input, values=["dark", "light", "system"], command=combobox_callback)
+menumode.place(relx=630/WIDTH, rely=425/HEIGHT, anchor="center")
 menumode.set("system")  # Set the default value to system mode
 
 # Create and place the submit button

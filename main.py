@@ -181,16 +181,16 @@ def quine_mccluskey(minterms):
     
     return essential_prime_implicants
 
-# Example usage:
-if __name__ == "__main__":
-    data = "2 3 4 5"  # Example minterms
-    vars = "A,B,C"  # Example variable names
+# # Example usage:
+# if __name__ == "__main__":
+#     data = "2 3 4 5"  # Example minterms
+#     vars = "A,B,C"  # Example variable names
     
-    temp=[]
-    data = input_minterms(data)  # Convert minterms input to list
-    minterms = quine_mccluskey(data)  # Run the Quine-McCluskey algorithm
+#     temp=[]
+#     data = input_minterms(data)  # Convert minterms input to list
+#     minterms = quine_mccluskey(data)  # Run the Quine-McCluskey algorithm
     
-    letters = input_letter(vars)  # Convert variable names to list
-    results = finding_unique_minterms(minterms, letters)  # Convert results to Boolean expression
+#     letters = input_letter(vars)  # Convert variable names to list
+#     results = finding_unique_minterms(minterms, letters)  # Convert results to Boolean expression
 
-    print(f"Quine Mccluskey: {results}")  # Output the simplified Boolean expression
+#     print(f"Quine Mccluskey: {results}")  # Output the simplified Boolean expression
