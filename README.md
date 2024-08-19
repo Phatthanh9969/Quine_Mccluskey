@@ -1,6 +1,6 @@
 Design by Thanh Phat
 
-Code with Python and customtkinter library
+Code with Python and Customtkinter library
 
 Soucre main in "main.py"
 
